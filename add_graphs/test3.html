@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Highcharts Example</title>
+
+		<style type="text/css">
+#container {
+	min-width: 310px;
+	max-width: 800px;
+	height: 400px;
+	margin: 0 auto
+}
+		</style>
+	</head>
+	<body>
+<script src="../code/highcharts.js"></script>
+<script src="../code/modules/series-label.js"></script>
+<script src="../code/modules/boost.js"></script>
+<script src="../code/modules/exporting.js"></script>
+<script src="../code/modules/export-data.js"></script>
+
+<div id="container"></div>
+
+
+
+<script type="text/javascript">
+  var max = 100;
+  var datum = new Array();
+  for (var i = 0; i < max; i++) {
+      datum.push({temp: Math.random(), data: Math.random()});
+  }
+
+  function Points(temperature, title) {
+      this.name = title;
+      this.data = new Array();
+      this.color = temperature;
+      this.marker = '{ "symbol": "circle" }';
+  }
+
+  var colors = new Array();
+  var n = 0xFF;
+  while (n >= 0x0) {
+      colors.push("#" + n.toString(16) + "00" + (0xFF-n).toString(16));
+      n -= 0x08;
+  }
+  console.log(colors);
+
+  var maxTemp = 1.0;
+  var minTemp = 0.0;
+  var step = (maxTemp - minTemp) / colors.length;
+  
+  var Lines = new Array();
+  for (var i = 0; i < colors.length; i++) {
+      Lines.push(new Points(colors[i], i + ""));
+  }
+  
+  for (var i = 0; i < max; i++) {
+      var d = datum[i];
+      var x = 0;
+      while (d.temp > (x*step)) {
+          x++;
+      }
+      x--;
+      for (j in Lines) {
+          var p = Lines[j];
+          if (x == p.name) {
+              p.data.push(d.data);
+          } else {
+              p.data.push(-1);
+          }
+      }
+  }
+
+  var json_string = '{';
+  json_string += '"chart":{ "type":"scatter", "zoomType":"x" },';
+  json_string += '"title":{ "text":"Density vs temperature vs time"},';
+  json_string += '"legend":{ "enabled":false },';
+  json_string += '"xAxis": { "title": { "text": "Time" } },';
+  json_string += '"yAxis": { "title": { "text": "Density" }, "floor": 0, "ceiling":1 },';
+  json_string += '"series":[';
+  
+  json_string += '{ "data":[' + Lines[0].data + '],';
+  json_string += ' "color":"' + Lines[0].color + '",';
+  json_string += ' "marker":' + Lines[0].marker + '}';
+  for (var i = 1; i < Lines.length; i++) {
+      json_string += ',{ "data":[' + Lines[i].data + '],';
+      json_string += ' "color":"' + Lines[i].color + '",';
+      json_string += ' "marker":' + Lines[i].marker + '}';
+  }
+  json_string += ']';
+  json_string += '}';
+
+  Highcharts.chart('container', JSON.parse(json_string));
+  console.log(JSON.parse(json_string));
+  
+		</script>
+	</body>
+</html>

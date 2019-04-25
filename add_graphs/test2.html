@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Highcharts Example</title>
+
+		<style type="text/css">
+#container {
+	min-width: 310px;
+	max-width: 800px;
+	height: 400px;
+	margin: 0 auto
+}
+		</style>
+	</head>
+	<body>
+<script src="../../code/highcharts.js"></script>
+<script src="../../code/modules/series-label.js"></script>
+<script src="../../code/modules/boost.js"></script>
+<script src="../../code/modules/exporting.js"></script>
+<script src="../../code/modules/export-data.js"></script>
+
+<div id="container"></div>
+
+
+
+<script type="text/javascript">
+  var max = 100;
+  var datum = new Array();
+  for (var i = 0; i < max; i++) {
+      //var insert = Math.random();
+      //datum.push({temp:insert, data:insert});
+      datum.push({temp: Math.random(), data: Math.random()});
+  }
+
+  var separations = 4;
+  var maxTemp = 1.0;
+  var minTemp = 0.0;
+  var step = (maxTemp - minTemp) / separations;
+  
+  var data = new Array();
+  for (var i = 0; i < separations; i++) {
+      var n = (i * step * 10) | 0;
+      var n16 = (0xF - n).toString(16);
+      var c = '#' + n16 + n16 + '00' + n + n;
+      console.log(c);
+      data.push({color: c, array: new Array()});
+  }
+
+  for (var i = 0; i < max; i++) {
+      var d = datum[i];
+      var x = 0;
+      while (d.temp > (x*step)) {
+          x++;
+      }
+      x--;
+      data[x].array.push(d.data);
+  }
+
+  Highcharts.chart('container', {
+      chart: {
+          type: 'scatter',
+          zoomType: 'x'
+      },
+      
+      title: {
+          text: 'Random numbers between 0 and 1'
+      },
+      
+      yAxis: {
+          title: {
+              text: 'y-value'
+          }
+      },
+
+      series: [
+          {
+              name: 'Many data points',
+              data: datum.map(getData),
+              //lineColor: {
+              //    linearGradient: { x1: 1, x2: 0, y1: 0, y2: 0 },
+              //    stops: [
+                      //[0, 'red'],
+                      //[0.25, 'yellow'],
+                      //[0.5, 'green'],
+                      //[0.75, 'yellow'],
+              //        [0, 'blue'],
+              //        [1, 'red']
+              //    ]
+              //}
+          }, {
+              name: 'Other data points',
+              data: datum.map(getTemp),
+              color: 'green'
+          }, {
+              name: '0',
+              data: data[0].array,
+              color: data[0].color,
+              marker: {
+                  symbol: 'circle'
+              }
+          }, {
+              name: '1',
+              data: data[1].array,
+              color: data[1].color,
+              marker: {
+                  symbol: 'circle'
+              }
+          }, {
+              name: '2',
+              data: data[2].array,
+              color: data[2].color,
+              marker: {
+                  symbol: 'circle'
+              }
+          }, {
+              name: '3',
+              data: data[3].array,
+              color: data[3].color,
+              marker: {
+                  symbol: 'circle'
+              }
+          }
+      ]
+})
+
+  function getData(value) {
+      return value.data;
+  }
+  function getTemp(value)  {
+      return value.temp;
+  }
+		</script>
+	</body>
+</html>
