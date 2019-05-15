@@ -24,7 +24,9 @@
     <script type="text/javascript" src="script_data.json"></script>
     <script type="text/javascript">
       
-  var datum = JSON.parse(info);
+
+  var temp = "temp_interior";
+  var density = "humidity";
   var max = datum.length;
 
   function Points(temperature, title) {
@@ -38,14 +40,12 @@
   var n = 0xFF;
   while (n >= 0x0) {
       colors.push("#" + n.toString(16) + "00" + (0xFF-n).toString(16));
-      n -= 0x08;
+      n -= 0x10;
   }
   console.log(colors);
 
-  var maxTemp = Math.max.apply(Math, datum.map(function(o) { return o.temp; }));
-  var minTemp = Math.min.apply(Math, datum.map(function(o) { return o.temp; }));
-  console.log(maxTemp);
-  console.log(minTemp);
+  var maxTemp = Math.max.apply(Math, datum.map(function(o) { return o[temp]; }));
+  var minTemp = Math.min.apply(Math, datum.map(function(o) { return o[temp]; }));
   var step = (maxTemp - minTemp) / colors.length;
   
   var Lines = new Array();
@@ -56,14 +56,15 @@
   for (var i = 0; i < max; i++) {
       var d = datum[i];
       var x = 0;
-      while (d.temp > (x*step)) {
+      while (d[temp] >= (x*step + minTemp)) {
           x++;
       }
       x--;
+
       for (j in Lines) {
           var p = Lines[j];
           if (x == p.name) {
-              p.data.push(d.data);
+              p.data.push(d[density]);
           } else {
               p.data.push(-1);
           }

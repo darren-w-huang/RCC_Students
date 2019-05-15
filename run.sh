@@ -15,5 +15,6 @@ if [ ! -r $1 ]; then
     exit 1
 fi
 
-echo "info = " > $SCRIPT
+echo "datum = " > $SCRIPT
 cat $1 >> $SCRIPT
+echo ";" >> $SCRIPT
