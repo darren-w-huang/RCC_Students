@@ -1,0 +1,3 @@
+-add a legend that shows color->temp
+-what are units for temp/density??
+-let users change their own values for density/temperature (for someone else?)

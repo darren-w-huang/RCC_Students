@@ -22,35 +22,29 @@
     <script src="../code/modules/export-data.js"></script>
     <div id="container"></div>  
     <script type="text/javascript" src="script_data.json"></script>
+    <script type="text/javascript" src="colors16.txt"></script>
     <script type="text/javascript">
       
 
-  var temp = "temp_interior";
-  var density = "humidity";
+  var temp = "temperature";
+  var density = "density";
   var max = datum.length;
 
-  function Points(temperature, title) {
-      this.name = title;
+  function Points(temperature) {
       this.data = new Array();
       this.color = temperature;
       this.marker = '{ "symbol": "circle" }';
   }
 
-  var colors = new Array();
-  var n = 0xFF;
-  while (n >= 0x0) {
-      colors.push("#" + n.toString(16) + "00" + (0xFF-n).toString(16));
-      n -= 0x10;
-  }
-  console.log(colors);
-
   var maxTemp = Math.max.apply(Math, datum.map(function(o) { return o[temp]; }));
   var minTemp = Math.min.apply(Math, datum.map(function(o) { return o[temp]; }));
+  var maxDensity = Math.ceil(Math.max.apply(Math, datum.map(function(o) { return o[density]; })));
+  var minDensity = Math.floor(Math.min.apply(Math, datum.map(function(o) { return o[density]; })));
   var step = (maxTemp - minTemp) / colors.length;
   
   var Lines = new Array();
   for (var i = 0; i < colors.length; i++) {
-      Lines.push(new Points(colors[i], i + ""));
+      Lines.push(new Points(colors[i]));
   }
   
   for (var i = 0; i < max; i++) {
@@ -60,10 +54,10 @@
           x++;
       }
       x--;
-
-      for (j in Lines) {
+  
+      for (var j = 0; j < Lines.length; j++) {
           var p = Lines[j];
-          if (x == p.name) {
+          if (x == j) {
               p.data.push(d[density]);
           } else {
               p.data.push(-1);
@@ -76,7 +70,8 @@
   json_string += '"title":{ "text":"Density vs temperature vs time"},';
   json_string += '"legend":{ "enabled":false },';
   json_string += '"xAxis": { "title": { "text": "Time" } },';
-  json_string += '"yAxis": { "title": { "text": "Density" }, "floor": 0, "ceiling":1 },';
+  json_string += '"yAxis": { "title": { "text": "Density" }, "floor":';
+  json_string += minDensity + ', "ceiling":' + maxDensity + ' },';
   json_string += '"series":[';
   
   json_string += '{ "data":[' + Lines[0].data + '],';
